@@ -3,6 +3,7 @@
 ;; Copyright (C) 2013 Yoshinari Nomura.
 ;; Copyright (C) 2013 Daniel German
 ;;
+;; version 0.1  <2013-05-29 Wed>
 ;;
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>
 ;; Author:  Daniel German    <dmg@uvic.ca>

@@ -1,13 +1,15 @@
 * Org Manage
 
-This is a module to help managing a large collection of org files.
+This is a module to help managing a large collection of org files. It
+is based on [[https://github.com/yoshinari-nomura/org-octopress][org-octopress]] by Yoshinari Nomura.
 
 
 ** Introduction
 
 Most of us have a large number of org files floating around. The idea
 is that you get a simplified view of your org files in a single window
-(think of it as a dashboard). For example, this is a hypothetical view created with org-manage.
+(think of it as a dashboard for your org-files). For example, this is
+a hypothetical view created with org-manage.
 
 
 | Date     | Title                  | Filename                   |
@@ -29,7 +31,7 @@ attribute #+TITLE: in the org file.
 
 Define the location where org files are to be found. Currently it only
 supports one directory. You can solve this by creating symbolic links
-from inside it.
+from inside this directory to the locations of other org files.
 
 #+BEGIN_SRC emacs_lisp
 (setq org-manage-directory-org       "~/myorgfiles")
@@ -43,7 +45,10 @@ M-x org-manage
 
 ** Comments 
 
-If you have comemnt, patches or suggestions, please send them to me at  dmg  <replacewiththattfamoussimbol> uvi.ca
+If you have comments, patches or suggestions, please send them to me
+at dmg <replacewiththattfamoussimbol> uvi.ca
+
+--dmg
 
 
 
