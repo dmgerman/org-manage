@@ -12,32 +12,36 @@ is that you get a simplified view of your org files in a single window
 a hypothetical view created with org-manage.
 
 
-| Date     | Title                  | Filename                   |
-|----------+------------------------+----------------------------|
-| 13/05/29 | Cooking                | /home/dmg/org/cooking.org  |
-| 13/05/29 | Project X              | /home/dmg/org/x.org        |
-| 13/05/29 | The different licenses | /home/dmg/org/licenses.org |
-| 13/05/29 | Todo File              | /home/dmg/org/todo.org     |
-| 13/05/28 | Linux                  | /home/dmg/org/linux.org    |
-| 13/05/28 | Notes                  | /home/dmg/org/notes.org    |
+| Date     | Title                  | Categories | Filename                   |
+|----------+------------------------+------------+----------------------------|
+| 13/05/29 | Cooking                | Hobbies    | /home/dmg/org/cooking.org  |
+| 13/05/29 | Project X              | Research   | /home/dmg/org/x.org        |
+| 13/05/29 | The different licenses | Research   | /home/dmg/org/licenses.org |
+| 13/05/29 | Todo File              | todo       | /home/dmg/org/todo.org     |
+| 13/05/28 | Linux                  | FAQs       | /home/dmg/org/linux.org    |
+| 13/05/28 | Notes                  | Notes      | /home/dmg/org/notes.org    |
 
 ** How it works
 
 org-manage scans a given directory (recursively) looking for org
 files. For each, an entry is created. The title is extracted from the
-attribute #+TITLE: in the org file.
+attribute #+TITLE: in the org file. The category is extracted from the
+first #+CATEGORY in the file (I suggest you add a default category to
+each file.
 
 ** How to use it
 
 Define the location where org files are to be found. Currently it only
 supports one directory. You can solve this by creating symbolic links
-from inside this directory to the locations of other org files.
+from inside this directory to the locations of other org files. There
+are other configuration variables (e.g. how much to recurse, files to
+ignore, etc--see [[./org-manage.el][source code file of org-manage.el]].
 
 #+BEGIN_SRC emacs_lisp
 (setq org-manage-directory-org       "~/myorgfiles")
 #+END_SRC
 
-Then simply run it using
+Then simply run it using:
 
 #+BEGIN_SRC emacs_lisp
 M-x org-manage
@@ -46,7 +50,7 @@ M-x org-manage
 ** Comments 
 
 If you have comments, patches or suggestions, please send them to me
-at dmg <replacewiththattfamoussimbol> uvic.ca
+at dmg <replacewiththattfamoussymbol> uvic.ca
 
 --dmg
 
