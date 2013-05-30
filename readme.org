@@ -46,7 +46,7 @@ M-x org-manage
 ** Comments 
 
 If you have comments, patches or suggestions, please send them to me
-at dmg <replacewiththattfamoussimbol> uvi.ca
+at dmg <replacewiththattfamoussimbol> uvic.ca
 
 --dmg
 
