@@ -1,0 +1,5 @@
+2013-05-29  dmg  <dmg@uvic.ca>
+
+	* org-manage.el: Implemented recursive scanning of directories.
+	* First release
+
