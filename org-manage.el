@@ -18,6 +18,9 @@
 ;; jump to any of those files from it.
 ;;
 ;;
+;; Requirements:
+;;     You need to install ctable from https://github.com/kiwanami/emacs-ctable
+;;
 ;; Basic settings:
 ;;
 ;; (setq org-manage-directory-org       "~/myorgfiles")

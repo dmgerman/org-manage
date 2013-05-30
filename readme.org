@@ -47,6 +47,10 @@ Then simply run it using:
 M-x org-manage
 #+END_SRC
 
+** Requirements
+
+You need to install [[https://github.com/kiwanami][Masashi Sakurai]]'s ctable from https://github.com/kiwanami/emacs-ctable
+
 ** Comments 
 
 If you have comments, patches or suggestions, please send them to me
