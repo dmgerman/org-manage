@@ -55,6 +55,9 @@
 (defvar org-manage-org-ignore nil
    "Regular expression for files/directories to ignore during scanning.")
 
+(defvar org-manage-org-max-searched-bytes nil
+   "Only search in the first given bytes of the file for the category/title of the file. Nil search in all file")
+
 (defun org-manage-directory-files-recursive (directory match maxdepth ignore)
   "List files in DIRECTORY and in its sub-directories. 
    Return files that match the regular expression MATCH but ignore     
@@ -98,7 +101,7 @@
      )
     )
 
-(defun org-manage--merge-keymap (keymap1 keymap2)
+(defun org-manage-merge-keymap (keymap1 keymap2)
   (append keymap1
           (delq nil
                 (mapcar
@@ -113,7 +116,7 @@
 ; todo: make it update the table when the g key is pressed
 ;  (define-key org-manage-summary-mode-map "g" 'org-manage-update)
  (setq org-manage-summary-mode-map
-       (org-manage--merge-keymap org-manage-summary-mode-map ctbl:table-mode-map)))
+       (org-manage-merge-keymap org-manage-summary-mode-map ctbl:table-mode-map)))
 
 ;; summary 
 (defun org-manage-summary-mode ()
@@ -128,19 +131,19 @@
         buffer-read-only t)
   (run-hooks 'org-manage-summary-mode-hook))
 
-(defun org-manage--summary-header (&optional title)
+(defun org-manage-summary-header (&optional title)
   (concat
    (format "%s\n" (or title "My org files"))
    (mapconcat
     'identity
-    (org-manage--summary-command-help
+    (org-manage-summary-command-help
      (remove-duplicates
       (mapcar 'cdr (cdr org-manage-summary-mode-map)))
      org-manage-summary-mode-map)
     "\n")
    "\n\n\n"))
 
-(defun org-manage--summary-command-help (symbols &optional keymap)
+(defun org-manage-summary-command-help (symbols &optional keymap)
   (let (symbol keysym keystr docstr summary-list)
     (while (setq symbol (car symbols))
       (setq keysym (where-is-internal symbol (or keymap (current-local-map)) nil)
@@ -155,7 +158,7 @@
       (setq symbols (cdr symbols)))
     summary-list))
 
-(defun org-manage--summary-table (contents keymap)
+(defun org-manage-summary-table (contents keymap)
   (let ((param (copy-ctbl:param ctbl:default-rendering-param)))
     (setf (ctbl:param-fixed-header param) t)
     (ctbl:create-table-component-region
@@ -179,46 +182,49 @@
              :min-width 40
              :max-width 140)
             (make-ctbl:cmodel
+             :title "Category"
+             :align 'left
+             :min-width 20
+             :max-width 140)
+            (make-ctbl:cmodel
              :title "Filename"
              :align 'left
              :min-width 40
              :max-width 140)
             )))))
 
-(defun org-manage-property (keys &optional filename)
-  (let ((plist (org-manage-property-list filename)))
-    (mapcar (lambda (key) (org-export-data-with-backend (plist-get plist key) 'html plist))
-            keys)))
-
-(defun org-manage-property-list (&optional filename)
-  (let ((backend 'html) plist)
+(defun org-manage-extract-properties-file (&optional filename)
+  (let ((title "")
+	(category "")
+	plist)
     (if filename
         (with-temp-buffer
           (insert-file-contents filename)
-          (org-mode)
-          (setq plist (org-export-get-environment backend))
-          (setq plist (plist-put plist :input-file filename))
-	  (setq plist (plist-put plist :last-mod  (format-time-string "%y/%m/%d" (nth 5 (file-attributes filename 'string)))))
+	  (goto-char (point-min))
+	  (save-match-data 
+	    (if (re-search-forward "#\\+TITLE: *\\(.+\\)$" org-manage-org-max-searched-bytes t)
+		(setq title (match-string 1))
+	      )
+	    (goto-char (point-min))
+	    (if (re-search-forward "#\\+CATEGORY: *\\(.+\\)$" org-manage-org-max-searched-bytes t)
+		(setq category (match-string 1))
+	      )
+	    )
+          (setq plist (list 
+		       (format-time-string "%y/%m/%d" (nth 5 (file-attributes filename 'string)))
+		        title category filename)
+		)
 	  )
-          
-      (setq plist (org-export-backend-options backend))
       plist)))
 
-(defun org-manage--scan-file ()
+(defun org-manage-scan-file ()
   (mapcar
    (lambda (filename)
-     (org-manage-property
-      '(:last-mod
-	:title
-        :input-file
-        :input-file
-        )
-      filename))
+     (org-manage-extract-properties-file filename))
    (org-manage-directory-files-recursive 
     (expand-file-name org-manage-directory-org) org-manage-org-files-match org-manage-max-recursion org-manage-org-ignore
     )
    ))
-;; t "^.*\\.org$")))
 
 ;; scan directory recursively
 
@@ -231,23 +237,18 @@
     (switch-to-buffer buf)
     (setq buffer-read-only nil)
     (erase-buffer)
-    (insert (org-manage--summary-header title))
+    (insert (org-manage-summary-header title))
     (save-excursion
-      (setq cp (org-manage--summary-table 
-                (org-manage--scan-file) org-manage-summary-mode-map)))
+      (setq cp (org-manage-summary-table 
+                (org-manage-scan-file) org-manage-summary-mode-map)))
     (ctbl:cp-add-click-hook
      cp
      (lambda ()
-       (find-file (nth 2 (ctbl:cp-get-selected-data-row cp)))))
+       (find-file (nth 3 (ctbl:cp-get-selected-data-row cp)))))
     (org-manage-summary-mode)
     (ctbl:navi-goto-cell
      (ctbl:find-first-cell (ctbl:component-dest cp)))
     ))
-
-;;; Helpers
-
-(defun org-manage--sanitize-title (title)
-  (replace-regexp-in-string "[\t ]+" "-" (downcase title)))
 
 (provide 'org-manage)
 
