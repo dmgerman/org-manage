@@ -33,11 +33,16 @@
 (require 'org)
 (require 'ctable)
 
+
 ;;; Publishing
 
 
 ;;; the default location of the org files
-(defvar org-manage-directory-org       "~/org")
+(defvar org-manage-directory-org  "~/org/" 
+  "the default directory to scan where  org files are located. It is trimmed from the list of filenames.")
+
+(defvar org-manage-date-format "%y/%m/%d %H:%M" 
+  "default date format for last modification of files")
 
 ;;; Summary Mode
 
@@ -60,6 +65,12 @@
 
 (defvar org-manage-org-max-searched-bytes nil
    "Only search in the first given bytes of the file for the category/title of the file. Nil search in all file")
+
+
+;; internal variables
+(defvar org-manage-table-cp nil 
+  "Keeps the table to display")
+
 
 (defun org-manage-directory-files-recursive (directory match maxdepth ignore)
   "List files in DIRECTORY and in its sub-directories. 
@@ -117,7 +128,7 @@
 (unless org-manage-summary-mode-map
  (setq org-manage-summary-mode-map (make-sparse-keymap))
 ; todo: make it update the table when the g key is pressed
-;  (define-key org-manage-summary-mode-map "g" 'org-manage-update)
+ (define-key org-manage-summary-mode-map "g" 'org-manage-update)
  (setq org-manage-summary-mode-map
        (org-manage-merge-keymap org-manage-summary-mode-map ctbl:table-mode-map)))
 
@@ -128,11 +139,20 @@
   (kill-all-local-variables)
   (setq truncate-lines t)
   (use-local-map org-manage-summary-mode-map)
+  (make-local-variable 'org-manage-table-cp) ; component value
   (setq major-mode 'org-manage-summary-mode
         mode-name  "org-manage")
   (setq buffer-undo-list t
         buffer-read-only t)
   (run-hooks 'org-manage-summary-mode-hook))
+
+(defun org-manage-update ()
+  "Update the current view"
+  (interactive)
+  (let (buffer-read-only
+        (model (ctbl:cp-get-model org-manage-table-cp)))
+    (setf (ctbl:model-data model) (org-manage-scan-files))
+    (ctbl:cp-update org-manage-table-cp)))
 
 (defun org-manage-summary-header (&optional title)
   (concat
@@ -183,12 +203,12 @@
              :title "Title"
              :align 'left
              :min-width 40
-             :max-width 140)
+             :max-width 80)
             (make-ctbl:cmodel
              :title "Category"
              :align 'left
              :min-width 20
-             :max-width 140)
+             :max-width 30)
             (make-ctbl:cmodel
              :title "Filename"
              :align 'left
@@ -196,13 +216,18 @@
              :max-width 140)
             )))))
 
-(defun org-manage-extract-properties-file (&optional filename)
+(defun org-manage-extract-properties-file (filename)
   (let ((title "")
 	(category "")
+	(shortname "short")
+	(prefix (expand-file-name org-manage-directory-org))
 	plist)
     (if filename
         (with-temp-buffer
           (insert-file-contents filename)
+	  (if (string= (substring filename 0 (length prefix)) prefix)
+	      (setq shortname (substring filename (length prefix)))
+	      )
 	  (goto-char (point-min))
 	  (save-match-data 
 	    (if (re-search-forward "#\\+TITLE: *\\(.+\\)$" org-manage-org-max-searched-bytes t)
@@ -213,14 +238,14 @@
 		(setq category (match-string 1))
 	      )
 	    )
-          (setq plist (list 
-		       (format-time-string "%y/%m/%d" (nth 5 (file-attributes filename 'string)))
-		        title category filename)
+          (setq plist (list  ; build list: date;title;category;shortname;filename
+		       (format-time-string org-manage-date-format (nth 5 (file-attributes filename 'string)))
+		        title category shortname filename)
 		)
 	  )
       plist)))
 
-(defun org-manage-scan-file ()
+(defun org-manage-scan-files ()
   (mapcar
    (lambda (filename)
      (org-manage-extract-properties-file filename))
@@ -243,14 +268,15 @@
     (insert (org-manage-summary-header title))
     (save-excursion
       (setq cp (org-manage-summary-table 
-                (org-manage-scan-file) org-manage-summary-mode-map)))
+                (org-manage-scan-files) org-manage-summary-mode-map)))
     (ctbl:cp-add-click-hook
      cp
      (lambda ()
-       (find-file (nth 3 (ctbl:cp-get-selected-data-row cp)))))
+       (find-file (nth 4 (ctbl:cp-get-selected-data-row cp)))))
     (org-manage-summary-mode)
     (ctbl:navi-goto-cell
      (ctbl:find-first-cell (ctbl:component-dest cp)))
+    (setq org-manage-table-cp cp)
     ))
 
 (provide 'org-manage)
