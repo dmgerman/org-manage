@@ -129,6 +129,7 @@
  (setq org-manage-summary-mode-map (make-sparse-keymap))
 ; todo: make it update the table when the g key is pressed
  (define-key org-manage-summary-mode-map "g" 'org-manage-update)
+ (define-key org-manage-summary-mode-map "q" 'org-manage-quit)
  (setq org-manage-summary-mode-map
        (org-manage-merge-keymap org-manage-summary-mode-map ctbl:table-mode-map)))
 
@@ -139,7 +140,7 @@
   (kill-all-local-variables)
   (setq truncate-lines t)
   (use-local-map org-manage-summary-mode-map)
-  (make-local-variable 'org-manage-table-cp) ; component value
+  (make-local-variable 'org-manage-table-cp) 
   (setq major-mode 'org-manage-summary-mode
         mode-name  "org-manage")
   (setq buffer-undo-list t
@@ -278,6 +279,13 @@
      (ctbl:find-first-cell (ctbl:component-dest cp)))
     (setq org-manage-table-cp cp)
     ))
+
+(defun org-manage-quit ()
+  "Simply quit"
+  (interactive)
+  (kill-buffer (current-buffer))
+  )
+
 
 (provide 'org-manage)
 
