@@ -1,3 +1,8 @@
+2013-06-16  dmg  <dmg@uvic.ca>
+
+	* Added a quit function
+	* Implemented a update of the files
+
 2013-05-29  dmg  <dmg@uvic.ca>
 
 	* org-manage.el: Implemented recursive scanning of directories.
