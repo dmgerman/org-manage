@@ -31,11 +31,15 @@ each file.
 
 ** How to use it
 
+Install the script =org-manage.el=. You can use =M-x
+package-install-file= if you use Emacs 24 or later, or you enabled
+=package.el=.
+
 Define the location where org files are to be found. Currently it only
 supports one directory. You can solve this by creating symbolic links
 from inside this directory to the locations of other org files. There
 are other configuration variables (e.g. how much to recurse, files to
-ignore, etc--see [[./org-manage.el][source code file of org-manage.el]].
+ignore, etc--see [[./org-manage.el][source code file of org-manage.el]]).
 
 #+BEGIN_SRC emacs_lisp
 (setq org-manage-directory-org       "~/myorgfiles")
