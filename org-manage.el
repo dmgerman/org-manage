@@ -1,14 +1,16 @@
 ;;; org-manage.el --- Manage org files in a given directory
 
-;; Copyright (C) 2013 Yoshinari Nomura.
-;; Copyright (C) 2013 Daniel German
-;;
-;; version 0.2  <2013-05-29 Wed>
-;;
-;; Author:  Yoshinari Nomura <nom@quickhack.net>
-;; Author:  Daniel German    <dmg@uvic.ca>
-;;
-;; Based on org-octopress.el by Yoshinari Nomura
+;; Copyright (C) 2013-2016 Daniel German and contributors
+;; 
+;; Author: Daniel German <dmg@uvic.ca> and contributors
+;; URL: http://github.com/dmgerman/org-manage/
+;; Package-Requires: ((org "8.0") (ctable "0.1.1"))
+;; Version: 0.2
+
+;;; Commentary:
+
+;; Based on org-octopress.el by Yoshinari Nomura, Copyright (C) 2013
+;; Yoshinari Nomura.
 ;;
 ;; Licensed under the same terms as Org-mode (http://orgmode.org/).
 ;; 
@@ -16,7 +18,6 @@
 ;; (and its subdirectories).  It shows in a table each of the org
 ;; files, its title and last modification time. The user can easily
 ;; jump to any of those files from it.
-;;
 ;;
 ;; Requirements:
 ;;     You need to install ctable from https://github.com/kiwanami/emacs-ctable
